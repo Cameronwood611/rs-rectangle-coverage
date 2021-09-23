@@ -1,9 +1,11 @@
 use std::cmp;
 use std::io::{self, BufRead};
+use std::collections::HashSet;
 use rand::thread_rng;
 use rand::seq::SliceRandom;
 
 
+#[derive(Hash, Eq, PartialEq, Debug)]
 struct Rectangle {
     x1: i32,
     y1: i32,
@@ -46,18 +48,22 @@ impl QuadNode {
 }
 
 
-fn traverse_sum(node: QuadNode, lbx: f64, lby: f64, rbx: f64, rby: f64) -> i32 {
+fn traverse_sum(node: QuadNode, lbx: i32, lby: i32, rbx: i32, rby: i32) -> i32 {
     match node.value {
-        QuadNodeValue::Str(s) => match s {
-            "empty" => 0,
-            "covered" => Rectangle::area(Rectangle::new(lbx as i32, lby as i32, rbx as i32, rby as i32)),
-            _ => 0
+        QuadNodeValue::Str(s) => {
+            return match s {
+                "empty" => 0,
+                "covered" => Rectangle::area(Rectangle::new(lbx, lby, rbx, rby)),
+                _ => 0
+            }
         },
         QuadNodeValue::Pivot(x, y) => {
-            return traverse_sum(*node.q1.unwrap(), lbx, lby, x as f64, y as f64)
-            + traverse_sum(*node.q2.unwrap(), lbx, y as f64, lbx, lby)
-            + traverse_sum(*node.q3.unwrap(), x as f64, lby, lbx, lby)
-            + traverse_sum(*node.q4.unwrap(), x as f64, y as f64, lbx, lby);
+            let a1 = traverse_sum(*node.q1.unwrap(), lbx, lby, x, y);
+            let a2 = traverse_sum(*node.q2.unwrap(), lbx, y, lbx, lby);
+            let a3 = traverse_sum(*node.q3.unwrap(), x, lby, lbx, lby);
+            let a4 = traverse_sum(*node.q4.unwrap(), x, y, lbx, lby);
+
+            return a1 + a2 + a3 + a4;
         }
     }
 }
@@ -110,13 +116,13 @@ fn rectangle_coverage(rectangles: Vec<Rectangle>) -> i32 {
     for rec in rectangles {
         root = add_rect(rec, root);
     }
-    return traverse_sum(root, f64::NEG_INFINITY, f64::NEG_INFINITY, f64::INFINITY, f64::INFINITY);
+    return traverse_sum(root, -1000000, -1000000, 1000000, 1000000);
 }
 
 fn main() {
     let input = io::stdin();
     let mut lines = input.lock().lines();
-    let mut rectangles = Vec::new();
+    let mut hash_rect = HashSet::<Rectangle>::new();
 
     while let Some(line) = lines.next() {
         let length: i32 = line.unwrap().trim().parse().unwrap();
@@ -133,15 +139,11 @@ fn main() {
             let y2: i32 = split.next().unwrap().parse().unwrap();
     
             let r = Rectangle::new(x1, y1, x2, y2);
-            rectangles.push(r);
+            hash_rect.insert(r);
         }
     }
+    let mut rectangles: Vec<Rectangle> = hash_rect.into_iter().collect();
     rectangles.shuffle(&mut thread_rng());
-    // input.read_line(&mut line).unwrap();
-    // let mut split = line.split_whitespace();
-    // let a: i32 = split.next().unwrap().parse().unwrap();
-    // let b: i32 = split.next().unwrap().parse().unwrap();
-    // println!("{}", a + b);
 
     // let r1 = Rectangle { x1: 1, y1: 1, x2: 4, y2: 4 };
     // let r2 = Rectangle { x1: 0, y1: 0, x2: 3, y2: 3 };
