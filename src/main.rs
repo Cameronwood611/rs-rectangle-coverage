@@ -148,7 +148,6 @@ fn main() {
     // let r1 = Rectangle { x1: 1, y1: 1, x2: 4, y2: 4 };
     // let r2 = Rectangle { x1: 0, y1: 0, x2: 3, y2: 3 };
     // let rectangles = vec![r1, r2];
-    println!("Size: {}", rectangles.len());
     let area = rectangle_coverage(rectangles);
-    println!("Total area covered: {}", area);
+    println!("{}", area);
 }
