@@ -7,24 +7,24 @@ use rand::seq::SliceRandom;
 
 #[derive(Hash, Eq, PartialEq, Debug)]
 struct Rectangle {
-    x1: i32,
-    y1: i32,
-    x2: i32,
-    y2: i32
+    x1: i64,
+    y1: i64,
+    x2: i64,
+    y2: i64
 }
 
 impl Rectangle {
-    pub fn new(x1: i32, y1: i32, x2: i32, y2: i32) -> Self {
+    pub fn new(x1: i64, y1: i64, x2: i64, y2: i64) -> Self {
         Rectangle { x1: x1, y1: y1, x2: x2, y2: y2 }
     }
-    pub fn area(self) -> i32 {
+    pub fn area(self) -> i64 {
         (self.x2 - self.x1) * (self.y2 - self.y1)
     }
 }
 
 enum QuadNodeValue {
     Str(&'static str),
-    Pivot(i32, i32)
+    Pivot(i64, i64)
 }
 
 struct QuadNode {
@@ -48,7 +48,7 @@ impl QuadNode {
 }
 
 
-fn traverse_sum(node: QuadNode, lbx: i32, lby: i32, rbx: i32, rby: i32) -> i32 {
+fn traverse_sum(node: QuadNode, lbx: i64, lby: i64, rbx: i64, rby: i64) -> i64 {
     match node.value {
         QuadNodeValue::Str(s) => {
             return match s {
@@ -110,7 +110,7 @@ fn add_rect(rect: Rectangle, mut node: QuadNode) -> QuadNode {
     }
 }
 
-fn rectangle_coverage(rectangles: Vec<Rectangle>) -> i32 {
+fn rectangle_coverage(rectangles: Vec<Rectangle>) -> i64 {
 
     let mut root = QuadNode::new(QuadNodeValue::Str("empty"), None, None, None, None);
     for rec in rectangles {
@@ -125,7 +125,7 @@ fn main() {
     let mut hash_rect = HashSet::<Rectangle>::new();
 
     while let Some(line) = lines.next() {
-        let length: i32 = line.unwrap().trim().parse().unwrap();
+        let length: i64 = line.unwrap().trim().parse().unwrap();
         for _ in 0..length {
             let line = lines
                 .next()
@@ -133,10 +133,10 @@ fn main() {
                 .expect("the line could not be read");
 
             let mut split = line.split_whitespace();
-            let x1: i32 = split.next().unwrap().parse().unwrap();
-            let y1: i32 = split.next().unwrap().parse().unwrap();
-            let x2: i32 = split.next().unwrap().parse().unwrap();
-            let y2: i32 = split.next().unwrap().parse().unwrap();
+            let x1: i64 = split.next().unwrap().parse().unwrap();
+            let y1: i64 = split.next().unwrap().parse().unwrap();
+            let x2: i64 = split.next().unwrap().parse().unwrap();
+            let y2: i64 = split.next().unwrap().parse().unwrap();
     
             let r = Rectangle::new(x1, y1, x2, y2);
             hash_rect.insert(r);
