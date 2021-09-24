@@ -54,7 +54,7 @@ fn traverse_sum(node: QuadNode, lbx: i64, lby: i64, rbx: i64, rby: i64) -> i64 {
             return match s {
                 "empty" => 0,
                 "covered" => Rectangle::area(Rectangle::new(lbx, lby, rbx, rby)),
-                _ => 0
+                _ => 0 //should never reach
             }
         },
         QuadNodeValue::Pivot(x, y) => {
@@ -93,10 +93,10 @@ fn add_rect(rect: Rectangle, mut node: QuadNode) -> QuadNode {
                         Some(Box::new(QuadNode::new(QuadNodeValue::Str("empty"), None, None, None, None))),
                         Some(Box::new(QuadNode::new(QuadNodeValue::Str("empty"), None, None, None, None))),
                         Some(Box::new(QuadNode::new(QuadNodeValue::Str("empty"), None, None, None, None)))
-                    )))
+                    ))) // wow that's tedious
                 ),
                 "covered" => node,
-                _ => node
+                _ => node //should never reach
             }
         },
         QuadNodeValue::Pivot(x, y) => {
@@ -116,7 +116,7 @@ fn rectangle_coverage(rectangles: Vec<Rectangle>) -> i64 {
     for rec in rectangles {
         root = add_rect(rec, root);
     }
-    return traverse_sum(root, -1000000, -1000000, 1000000, 1000000);
+    return traverse_sum(root, -1000000, -1000000, 1000000, 1000000); // boundary of input
 }
 
 fn main() {
@@ -145,9 +145,6 @@ fn main() {
     let mut rectangles: Vec<Rectangle> = hash_rect.into_iter().collect();
     rectangles.shuffle(&mut thread_rng());
 
-    // let r1 = Rectangle { x1: 1, y1: 1, x2: 4, y2: 4 };
-    // let r2 = Rectangle { x1: 0, y1: 0, x2: 3, y2: 3 };
-    // let rectangles = vec![r1, r2];
     let area = rectangle_coverage(rectangles);
     println!("{}", area);
 }
